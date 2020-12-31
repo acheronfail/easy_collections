@@ -1,9 +1,14 @@
-# Easy Collections
+[![crate](https://img.shields.io/crates/v/easy_collections)](https://crates.io/crates/easy_collections)
+[![documentation](https://docs.rs/easy_collections/badge.svg)](https://docs.rs/easy_collections)
+[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/acheronfail/easy_collections.svg)](https://isitmaintained.com/project/acheronfail/easy_collections "Average time to resolve an issue")
+[![Percentage of issues still open](https://isitmaintained.com/badge/open/acheronfail/easy_collections.svg)](https://isitmaintained.com/project/acheronfail/easy_collections "Percentage of issues still open")
+
+# easy_collections
 
 These are wrappers around `HashSet` and `HashMap` which make them a little more convenient to use.
 They aren't intended for use in main applications, but were created to make prototyping and writing short programs easier.
 
-## Example
+## Usage
 
 The struct `EasySet` wraps `HashSet` with some useful trait implementations.
 
@@ -26,7 +31,7 @@ assert!(a == a);                      // equality
 The struct `EasyMap` wraps `HashMap` with some useful trait implementations.
 
 ```rust
-use easy_collections::map;
+use easy_collections::{EasyMap, map};
 
 // `42` here is the default value which is returned when no item exists in the map
 // The default value is optional.
@@ -39,13 +44,16 @@ assert_eq!(map["nada"], 42);
 assert_eq!(map["nuttin'"], 42);
 
 // If you want to create a map with just a single value, and no default, use a trailing comma:
-let map = map!{("foo", "bar")};  // creates `EasyMap<_, (&str, &str)>` with `("foo", "bar")` as the default value
-let map = map!{("foo", "bar"),}; // creates `EasyMap<&str, &str>` with and `map["foo"] == "bar"`
+let map: EasyMap<&str, (&str, &str)> = map!{("foo", "bar")};  // creates `EasyMap<_, (&str, &str)>` with `("foo", "bar")` as the default value
+let map: EasyMap<&str, &str> = map!{("foo", "bar"),}; // creates `EasyMap<&str, &str>` with and `map["foo"] == "bar"`
 ```
 
 Also, both `EasyMap` and `EasySet` deref to their underlying collections, for example:
 
 ```rust
+use std::collections::{HashMap, HashSet};
+use easy_collections::{EasyMap, EasySet, map, set};
+
 let easy: EasySet<_> = set!{"foo", "bar"};
 let hash: &HashSet<_> = &*easy;
 assert_eq!(&*easy, hash);
@@ -55,6 +63,4 @@ let hash: &HashMap<_, _> = &*easy;
 assert_eq!(&*easy, hash);
 ```
 
-## Other Notes
-
-Contributions welcome.
+License: Unlicense OR MIT OR Apache-2.0
