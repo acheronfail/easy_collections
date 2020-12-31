@@ -44,8 +44,8 @@ assert_eq!(map["nada"], 42);
 assert_eq!(map["nuttin'"], 42);
 
 // If you want to create a map with just a single value, and no default, use a trailing comma:
-let map: EasyMap<&str, (&str, &str)> = map!{("foo", "bar")};  // creates `EasyMap<_, (&str, &str)>` with `("foo", "bar")` as the default value
-let map: EasyMap<&str, &str> = map!{("foo", "bar"),}; // creates `EasyMap<&str, &str>` with and `map["foo"] == "bar"`
+let map: EasyMap<&str, (&str, &str)> = map!{("foo", "bar")};
+let map: EasyMap<&str, &str> = map!{("foo", "bar"),};
 ```
 
 Also, both `EasyMap` and `EasySet` deref to their underlying collections, for example:
