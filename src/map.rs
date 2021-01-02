@@ -1,6 +1,6 @@
-use std::{iter::FromIterator, collections::HashMap};
 use std::hash::Hash;
-use std::ops::{Index, IndexMut, Deref};
+use std::ops::{Deref, Index, IndexMut};
+use std::{collections::HashMap, iter::FromIterator};
 
 #[macro_export]
 macro_rules! map {
@@ -61,7 +61,7 @@ impl<K: Eq + Hash, V: Clone + Default> EasyMap<K, V> {
     /// assert_eq!(map["hello"], "world");
     /// assert_eq!(map["not here"], "");
     /// ```
-    pub fn new() ->  EasyMap<K, V> {
+    pub fn new() -> EasyMap<K, V> {
         EasyMap::new_with_default(V::default())
     }
 }
@@ -178,37 +178,37 @@ mod test {
     #[test]
     fn macros() {
         // without default
-        let map: EasyMap<char, usize> = map!{};
+        let map: EasyMap<char, usize> = map! {};
         assert_eq!(map['a'], 0);
         assert_eq!(map['b'], 0);
         assert_eq!(map['c'], 0);
 
         // with default
-        let map: EasyMap<char, usize> = map!{1};
+        let map: EasyMap<char, usize> = map! {1};
         assert_eq!(map['a'], 1);
         assert_eq!(map['b'], 1);
         assert_eq!(map['c'], 1);
 
         // without default & without trailing comma
-        let map = map!{('a', 10), ('b', 20)};
+        let map = map! {('a', 10), ('b', 20)};
         assert_eq!(map['a'], 10);
         assert_eq!(map['b'], 20);
         assert_eq!(map['c'], 0);
 
         // without default & with trailing comma
-        let map = map!{('a', 100), ('b', 200), };
+        let map = map! {('a', 100), ('b', 200), };
         assert_eq!(map['a'], 100);
         assert_eq!(map['b'], 200);
         assert_eq!(map['c'], 0);
 
         // with default & without trailing comma
-        let map = map!{1; ('a', 10), ('b', 20)};
+        let map = map! {1; ('a', 10), ('b', 20)};
         assert_eq!(map['a'], 10);
         assert_eq!(map['b'], 20);
         assert_eq!(map['c'], 1);
 
         // with default & with trailing comma
-        let map = map!{1; ('a', 100), ('b', 200), };
+        let map = map! {1; ('a', 100), ('b', 200), };
         assert_eq!(map['a'], 100);
         assert_eq!(map['b'], 200);
         assert_eq!(map['c'], 1);
@@ -245,7 +245,7 @@ mod test {
 
     #[test]
     fn deref() {
-        let easy: EasyMap<_, _> = map!{("foo", "bar"),};
+        let easy: EasyMap<_, _> = map! {("foo", "bar"),};
         let hash: &HashMap<_, _> = &*easy;
 
         assert_eq!(&*easy, hash);
@@ -253,7 +253,7 @@ mod test {
 
     #[test]
     fn iter_via_deref() {
-        let map = map!{('i', true), ('t', true), ('e', true), ('r', true)};
+        let map = map! {('i', true), ('t', true), ('e', true), ('r', true)};
         let mut values = vec![];
         for (k, v) in &*map {
             values.push((*k, *v));
@@ -261,15 +261,21 @@ mod test {
 
         // the values could be in any order
         values.sort();
-        assert_eq!(values, &[('e', true), ('i', true), ('r', true), ('t', true)]);
+        assert_eq!(
+            values,
+            &[('e', true), ('i', true), ('r', true), ('t', true)]
+        );
 
         // ensure we can still use the map here
-        assert_eq!(map, map!{('i', true), ('t', true), ('e', true), ('r', true)});
+        assert_eq!(
+            map,
+            map! {('i', true), ('t', true), ('e', true), ('r', true)}
+        );
     }
 
     #[test]
     fn into_iter() {
-        let map = map!{('i', true), ('t', true), ('e', true), ('r', true)};
+        let map = map! {('i', true), ('t', true), ('e', true), ('r', true)};
         let mut values = vec![];
         for x in map {
             values.push(x);
@@ -277,13 +283,16 @@ mod test {
 
         // the values could be in any order
         values.sort();
-        assert_eq!(values, &[('e', true), ('i', true), ('r', true), ('t', true)]);
+        assert_eq!(
+            values,
+            &[('e', true), ('i', true), ('r', true), ('t', true)]
+        );
     }
 
     #[test]
     fn from_iter() {
         let v = vec![('i', true), ('t', true), ('e', true), ('r', true)];
         let s = v.into_iter().collect::<EasyMap<_, _>>();
-        assert_eq!(s, map!{('i', true), ('t', true), ('e', true), ('r', true)});
+        assert_eq!(s, map! {('i', true), ('t', true), ('e', true), ('r', true)});
     }
 }

@@ -1,9 +1,9 @@
 use std::{
-    cmp::{Ordering, PartialOrd, Ord},
+    cmp::{Ord, Ordering, PartialOrd},
     collections::HashSet,
     hash::Hash,
     iter::FromIterator,
-    ops::{BitAnd, BitAndAssign, Deref, BitOr, BitOrAssign, BitXor, BitXorAssign, Sub, SubAssign},
+    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Deref, Sub, SubAssign},
 };
 
 use paste::paste;
@@ -144,7 +144,7 @@ impl<K: Eq + Hash> IntoIterator for EasySet<K> {
     }
 }
 
-impl<K: Eq + Hash>  Deref for EasySet<K> {
+impl<K: Eq + Hash> Deref for EasySet<K> {
     type Target = HashSet<K>;
     fn deref(&self) -> &Self::Target {
         &self.inner
@@ -224,7 +224,7 @@ mod test {
 
     #[test]
     fn deref() {
-        let easy: EasySet<_> = set!{("foo", "bar"),};
+        let easy: EasySet<_> = set! {("foo", "bar"),};
         let hash: &HashSet<_> = &*easy;
 
         assert_eq!(&*easy, hash);
@@ -232,7 +232,7 @@ mod test {
 
     #[test]
     fn iter_via_deref() {
-        let set = set!{'i', 't', 'e', 'r'};
+        let set = set! {'i', 't', 'e', 'r'};
         let mut values = vec![];
         for x in &*set {
             values.push(*x);
@@ -243,12 +243,12 @@ mod test {
         assert_eq!(values, &['e', 'i', 'r', 't']);
 
         // ensure we can still use the set here
-        assert_eq!(set, set!{'i', 't', 'e', 'r'});
+        assert_eq!(set, set! {'i', 't', 'e', 'r'});
     }
 
     #[test]
     fn into_iter() {
-        let set = set!{'i', 't', 'e', 'r'};
+        let set = set! {'i', 't', 'e', 'r'};
         let mut values = vec![];
         for x in set {
             values.push(x);
@@ -263,14 +263,14 @@ mod test {
     fn from_iter() {
         let v = vec!['i', 't', 'e', 'r'];
         let s = v.iter().collect::<EasySet<_>>();
-        assert_eq!(s, set!{&'i', &'t', &'e', &'r'});
+        assert_eq!(s, set! {&'i', &'t', &'e', &'r'});
     }
 
     #[test]
     fn cmp() {
-        let a = set!{1, 2, 3, 4};
-        let b = set!{2, 3};
-        let d = set!{5, 6};
+        let a = set! {1, 2, 3, 4};
+        let b = set! {2, 3};
+        let d = set! {5, 6};
 
         // a is a superset of b
         assert!(a > b);
@@ -308,7 +308,6 @@ mod test {
             }
         };
     }
-
 
     test_op!(ops_bitand, &, &=, [3]);
     test_op!(ops_bitor, |, |=, [1, 2, 3, 4, 5]);
