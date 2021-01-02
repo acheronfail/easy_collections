@@ -25,7 +25,7 @@ assert_eq!(a - b, set!{1});           // difference
 let c = &set!{1, 2, 3, 4};
 assert!(a < c && b < c);              // subset
 assert!(c > a && c > b);              // superset
-assert!(a == a);                      // equality
+assert!(*a == set!{1, 2, 3});         // equality
 ```
 
 The struct `EasyMap` wraps `HashMap` with some useful trait implementations.
