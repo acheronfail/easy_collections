@@ -82,6 +82,28 @@ impl<K: Eq + Hash> EasySet<K> {
     pub fn remove(&mut self, k: &K) -> bool {
         self.inner.remove(k)
     }
+
+    /// Inserts the key into the set _if it wasn't in the set_. If it was in the set _it is removed_.
+    ///
+    /// ```rust
+    /// use easy_collections::set;
+    ///
+    /// let mut set = set!{};
+    /// set.toggle(1986);
+    /// assert!(set.contains(&1986));
+    /// set.toggle(1986);
+    /// assert!(!set.contains(&1986));
+    ///```
+    pub fn toggle(&mut self, k: K) -> bool {
+        let contained_key = self.contains(&k);
+        if self.contains(&k) {
+            self.remove(&k);
+        } else {
+            self.insert(k);
+        }
+
+        contained_key
+    }
 }
 
 impl<K: Eq + Hash> From<Vec<K>> for EasySet<K> {
