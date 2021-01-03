@@ -1,6 +1,8 @@
+use std::collections::hash_map::Entry;
+use std::collections::HashMap;
 use std::hash::Hash;
+use std::iter::FromIterator;
 use std::ops::{Deref, Index, IndexMut};
-use std::{collections::HashMap, iter::FromIterator};
 
 #[macro_export]
 macro_rules! map {
@@ -116,6 +118,11 @@ impl<K: Eq + Hash, V: Clone> EasyMap<K, V> {
     /// Same as `HashMap::remove`.
     pub fn remove(&mut self, k: K) -> Option<V> {
         self.inner.remove(&k)
+    }
+
+    /// Same as `HashMap::entry`.
+    pub fn entry(&mut self, k: K) -> Entry<K, V> {
+        self.inner.entry(k)
     }
 }
 
@@ -294,5 +301,15 @@ mod test {
         let v = vec![('i', true), ('t', true), ('e', true), ('r', true)];
         let s = v.into_iter().collect::<EasyMap<_, _>>();
         assert_eq!(s, map! {('i', true), ('t', true), ('e', true), ('r', true)});
+    }
+
+    #[test]
+    fn entry() {
+        let mut map = map! {("foo", 42),};
+        *map.entry("foo").or_insert(1) *= 10;
+        *map.entry("bar").or_insert(1) *= 10;
+
+        assert_eq!(map["foo"], 420);
+        assert_eq!(map["bar"], 10);
     }
 }
