@@ -125,6 +125,12 @@ impl<K: Eq + Hash> From<Vec<K>> for EasySet<K> {
     }
 }
 
+impl<K: Eq + Hash + Clone> From<&Vec<K>> for EasySet<K> {
+    fn from(v: &Vec<K>) -> Self {
+        v.into_iter().cloned().collect()
+    }
+}
+
 impl<K: Eq + Hash + Clone> From<&[K]> for EasySet<K> {
     fn from(v: &[K]) -> Self {
         v.iter().cloned().collect()
