@@ -1,3 +1,7 @@
+# 0.3.2
+
+- fae1e0a feat: impl From<&Vec<K>> for EasySet
+
 # 0.3.1
 
 - fae1668 feat: impl DerefMut
