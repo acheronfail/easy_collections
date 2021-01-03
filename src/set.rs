@@ -3,7 +3,10 @@ use std::{
     collections::HashSet,
     hash::Hash,
     iter::FromIterator,
-    ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Deref, Sub, SubAssign},
+    ops::{
+        BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Deref, DerefMut, Sub,
+        SubAssign,
+    },
 };
 
 use paste::paste;
@@ -161,6 +164,12 @@ impl<K: Eq + Hash> Deref for EasySet<K> {
     }
 }
 
+impl<K: Eq + Hash> DerefMut for EasySet<K> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
+}
+
 impl<K: Eq + Hash> PartialOrd for EasySet<K> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
@@ -271,6 +280,16 @@ mod test {
         let hash: &HashSet<_> = &*easy;
 
         assert_eq!(&*easy, hash);
+    }
+
+    #[test]
+    fn deref_mut() {
+        let mut easy: EasySet<_> = set! {"foo", "bar"};
+
+        let hash = &mut *easy;
+        hash.insert("baz");
+
+        assert_eq!(easy, set! {"foo", "bar", "baz"});
     }
 
     #[test]

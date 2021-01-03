@@ -2,7 +2,7 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 use std::hash::Hash;
 use std::iter::FromIterator;
-use std::ops::{Deref, Index, IndexMut};
+use std::ops::{Deref, DerefMut, Index, IndexMut};
 
 #[macro_export]
 macro_rules! map {
@@ -165,6 +165,12 @@ impl<K: Eq + Hash, V: Clone> Deref for EasyMap<K, V> {
     }
 }
 
+impl<K: Eq + Hash, V: Clone> DerefMut for EasyMap<K, V> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
+}
+
 impl<K: Eq + Hash, V: Clone> Index<K> for EasyMap<K, V> {
     type Output = V;
     fn index(&self, key: K) -> &Self::Output {
@@ -256,6 +262,16 @@ mod test {
         let hash: &HashMap<_, _> = &*easy;
 
         assert_eq!(&*easy, hash);
+    }
+
+    #[test]
+    fn deref_mut() {
+        let mut easy: EasyMap<_, _> = map! {("foo", "bar"),};
+
+        let hash = &mut *easy;
+        hash.insert("bar", "foo");
+
+        assert_eq!(easy, map! {("foo", "bar"), ("bar", "foo")});
     }
 
     #[test]
