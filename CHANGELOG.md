@@ -1,3 +1,7 @@
+# 0.3.1
+
+- fae1668 feat: impl DerefMut
+
 # 0.3.0
 
 - fae1d48 feat: make operations on `EasySet` more flexible by using `Into`
