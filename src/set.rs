@@ -226,6 +226,8 @@ impl<K: Eq + Hash + Clone> From<&EasySet<K>> for HashSet<K> {
     }
 }
 
+// TODO: once we have specialisation: https://github.com/rust-lang/rust/issues/31844
+// then we can impl much more performant variants of these traits
 macro_rules! impl_bit_op {
     ($trait:ty, $method:ident, $set_op:ident) => {
         paste! {
