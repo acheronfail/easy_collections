@@ -45,6 +45,16 @@ macro_rules! set {
 /// // equality
 /// assert!(a == a);
 /// ```
+///
+/// You can also perform the same operations on types that implement `Into<EasySet<K>>`, for example:
+/// ```rust
+/// use easy_collections::set;
+///
+/// assert_eq!(set!{1, 2, 3} & [3, 4, 5].as_ref(), set!{3});
+/// assert_eq!(set!{1, 2, 3} & vec![3, 4, 5], set!{3});
+/// assert_eq!(set!{'b', 'a', 'r'} & String::from("baz"), set!{'b', 'a'});
+/// assert_eq!(set!{"hello"} & std::collections::HashSet::new(), set!{});
+/// ```
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct EasySet<K: Eq + Hash> {
     inner: HashSet<K>,
@@ -90,9 +100,9 @@ impl<K: Eq + Hash> EasySet<K> {
     ///
     /// let mut set = set!{};
     /// set.toggle(1986);
-    /// assert!(set.contains(&1986));
+    /// assert_eq!(set.contains(&1986), true);
     /// set.toggle(1986);
-    /// assert!(!set.contains(&1986));
+    /// assert_eq!(set.contains(&1986), false);
     ///```
     pub fn toggle(&mut self, k: K) -> bool {
         let contained_key = self.contains(&k);
@@ -169,24 +179,57 @@ impl<K: Eq + Hash> Ord for EasySet<K> {
     }
 }
 
+impl<K: Eq + Hash + Clone> From<&EasySet<K>> for EasySet<K> {
+    fn from(easy: &EasySet<K>) -> Self {
+        easy.clone()
+    }
+}
+
+impl<K: Eq + Hash> From<HashSet<K>> for EasySet<K> {
+    fn from(inner: HashSet<K>) -> Self {
+        EasySet { inner }
+    }
+}
+
+impl<K: Eq + Hash + Clone> From<&HashSet<K>> for EasySet<K> {
+    fn from(hash: &HashSet<K>) -> Self {
+        EasySet {
+            inner: (*hash).clone(),
+        }
+    }
+}
+
+impl<K: Eq + Hash> From<EasySet<K>> for HashSet<K> {
+    fn from(easy: EasySet<K>) -> Self {
+        easy.inner
+    }
+}
+
+impl<K: Eq + Hash + Clone> From<&EasySet<K>> for HashSet<K> {
+    fn from(easy: &EasySet<K>) -> Self {
+        easy.inner.clone()
+    }
+}
+
 macro_rules! impl_bit_op {
     ($trait:ty, $method:ident, $set_op:ident) => {
         paste! {
-            impl<K: Eq + Hash + Clone> $trait for &EasySet<K> {
+            impl<K: Eq + Hash + Clone, T: Into<EasySet<K>>> $trait<T> for &EasySet<K> {
                 type Output = EasySet<K>;
-                fn $method(self, rhs: Self) -> Self::Output {
-                    self.inner.$set_op(&rhs.inner).cloned().collect()
+                fn $method(self, rhs: T) -> Self::Output {
+                    self.inner.$set_op(&rhs.into()).cloned().collect()
                 }
             }
-            impl<K: Eq + Hash + Clone> $trait for EasySet<K> {
+            impl<K: Eq + Hash + Clone, T: Into<EasySet<K>>> $trait<T> for EasySet<K> {
                 type Output = Self;
-                fn $method(self, rhs: Self) -> Self::Output {
-                    self.inner.$set_op(&rhs.inner).cloned().collect()
+                fn $method(self, rhs: T) -> Self::Output {
+                    self.inner.$set_op(&rhs.into()).cloned().collect()
                 }
             }
-            impl<K: Eq + Hash + Clone> [<$trait Assign>] for EasySet<K> {
-                fn [<$method _assign>](&mut self, rhs: Self) {
-                    *self = self.inner.$set_op(&rhs.inner).cloned().collect()
+            // assign
+            impl<K: Eq + Hash + Clone, T: Into<EasySet<K>>> [<$trait Assign>]<T> for EasySet<K> {
+                fn [<$method _assign>](&mut self, rhs: T) {
+                    *self = self.inner.$set_op(&rhs.into()).cloned().collect()
                 }
             }
         }
