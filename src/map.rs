@@ -12,12 +12,13 @@ macro_rules! map {
     {$default:expr} => {
         $crate::EasyMap::new_with_default($default)
     };
-    {$(($key:expr, $val:expr)$(,)?)*} => {{
+
+    {$($key:expr => $val:expr$(,)?)*} => {{
         let mut map = map!{};
         $(map[$key] = $val;)*
         map
     }};
-    {$default:expr; $(($key:expr, $val:expr)$(,)?)*} => {{
+    {$default:expr; $($key:expr => $val:expr$(,)?)*} => {{
         let mut map = map!{$default};
         $(map[$key] = $val;)*
         map
@@ -58,7 +59,7 @@ impl<K: Eq + Hash, V: Clone + Default> EasyMap<K, V> {
     /// ```rust
     /// use easy_collections::map;
     ///
-    /// let map = map!{("foo", "bar"), ("hello", "world")};
+    /// let map = map!{"foo" => "bar", "hello" => "world"};
     /// assert_eq!(map["foo"], "bar");
     /// assert_eq!(map["hello"], "world");
     /// assert_eq!(map["not here"], "");
@@ -89,7 +90,7 @@ impl<K: Eq + Hash, V: Clone> EasyMap<K, V> {
     /// ```rust
     /// use easy_collections::map;
     ///
-    /// let map = map!{42; ("foo", 1), ("bar", 10), ("baz", 100)};
+    /// let map = map!{42; "foo" => 1, "bar" => 10, "baz" => 100};
     /// assert_eq!(map["foo"], 1);
     /// assert_eq!(map["bar"], 10);
     /// assert_eq!(map["baz"], 100);
@@ -203,25 +204,25 @@ mod test {
         assert_eq!(map['c'], 1);
 
         // without default & without trailing comma
-        let map = map! {('a', 10), ('b', 20)};
+        let map = map! { 'a' => 10, 'b' => 20 };
         assert_eq!(map['a'], 10);
         assert_eq!(map['b'], 20);
         assert_eq!(map['c'], 0);
 
         // without default & with trailing comma
-        let map = map! {('a', 100), ('b', 200), };
+        let map = map! { 'a' => 100, 'b' => 200, };
         assert_eq!(map['a'], 100);
         assert_eq!(map['b'], 200);
         assert_eq!(map['c'], 0);
 
         // with default & without trailing comma
-        let map = map! {1; ('a', 10), ('b', 20)};
+        let map = map! { 1; 'a' => 10, 'b' => 20 };
         assert_eq!(map['a'], 10);
         assert_eq!(map['b'], 20);
         assert_eq!(map['c'], 1);
 
         // with default & with trailing comma
-        let map = map! {1; ('a', 100), ('b', 200), };
+        let map = map! { 1; 'a' => 100, 'b' => 200, };
         assert_eq!(map['a'], 100);
         assert_eq!(map['b'], 200);
         assert_eq!(map['c'], 1);
@@ -241,7 +242,7 @@ mod test {
 
     #[test]
     fn index_mut() {
-        let mut map = map!(1; ('a', 1729));
+        let mut map = map!(1; 'a' => 1729);
 
         // test existing key
         let a = &mut map['a'];
@@ -258,7 +259,7 @@ mod test {
 
     #[test]
     fn deref() {
-        let easy: EasyMap<_, _> = map! {("foo", "bar"),};
+        let easy: EasyMap<_, _> = map! {"foo" => "bar",};
         let hash: &HashMap<_, _> = &*easy;
 
         assert_eq!(&*easy, hash);
@@ -266,17 +267,17 @@ mod test {
 
     #[test]
     fn deref_mut() {
-        let mut easy: EasyMap<_, _> = map! {("foo", "bar"),};
+        let mut easy: EasyMap<_, _> = map! {"foo" => "bar",};
 
         let hash = &mut *easy;
         hash.insert("bar", "foo");
 
-        assert_eq!(easy, map! {("foo", "bar"), ("bar", "foo")});
+        assert_eq!(easy, map! {"foo" => "bar", "bar" => "foo"});
     }
 
     #[test]
     fn iter_via_deref() {
-        let map = map! {('i', true), ('t', true), ('e', true), ('r', true)};
+        let map = map! {'i' => true, 't' => true, 'e' => true, 'r' => true};
         let mut values = vec![];
         for (k, v) in &*map {
             values.push((*k, *v));
@@ -292,13 +293,13 @@ mod test {
         // ensure we can still use the map here
         assert_eq!(
             map,
-            map! {('i', true), ('t', true), ('e', true), ('r', true)}
+            map! {'i' => true, 't' => true, 'e' => true, 'r' => true}
         );
     }
 
     #[test]
     fn into_iter() {
-        let map = map! {('i', true), ('t', true), ('e', true), ('r', true)};
+        let map = map! {'i' => true, 't' => true, 'e' => true, 'r' => true};
         let mut values = vec![];
         for x in map {
             values.push(x);
@@ -316,12 +317,12 @@ mod test {
     fn from_iter() {
         let v = vec![('i', true), ('t', true), ('e', true), ('r', true)];
         let s = v.into_iter().collect::<EasyMap<_, _>>();
-        assert_eq!(s, map! {('i', true), ('t', true), ('e', true), ('r', true)});
+        assert_eq!(s, map! {'i' => true, 't' => true, 'e' => true, 'r' => true});
     }
 
     #[test]
     fn entry() {
-        let mut map = map! {("foo", 42),};
+        let mut map = map! {"foo" => 42,};
         *map.entry("foo").or_insert(1) *= 10;
         *map.entry("bar").or_insert(1) *= 10;
 

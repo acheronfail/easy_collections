@@ -28,7 +28,7 @@
 //!
 //! // `42` here is the default value which is returned when no item exists in the map
 //! // The default value is optional.
-//! let map = map!{42; ("foo", 1), ("bar", 10), ("baz", 100)};
+//! let map = map!{42; "foo" => 1, "bar" => 10, "baz" => 100};
 //! assert_eq!(map["foo"], 1);
 //! assert_eq!(map["bar"], 10);
 //! assert_eq!(map["baz"], 100);
@@ -36,9 +36,7 @@
 //! assert_eq!(map["nada"], 42);
 //! assert_eq!(map["nuttin'"], 42);
 //!
-//! // If you want to create a map with just a single value, and no default, use a trailing comma:
-//! let map: EasyMap<&str, (&str, &str)> = map!{("foo", "bar")};
-//! let map: EasyMap<&str, &str> = map!{("foo", "bar"),};
+//! let map: EasyMap<&str, &str> = map!{ "foo" => "bar" };
 //! ```
 //!
 //! Also, both `EasyMap` and `EasySet` deref to their underlying collections, for example:
@@ -51,7 +49,7 @@
 //! let hash: &HashSet<_> = &*easy;
 //! assert_eq!(&*easy, hash);
 //!
-//! let easy: EasyMap<_, _> = map!{("foo", "bar"),};
+//! let easy: EasyMap<_, _> = map!{"foo" => "bar",};
 //! let hash: &HashMap<_, _> = &*easy;
 //! assert_eq!(&*easy, hash);
 //! ```
