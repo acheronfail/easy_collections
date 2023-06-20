@@ -1,3 +1,7 @@
+# 0.4.0
+
+- fae166e breaking change: updated the macro syntax for `map!`
+
 # 0.3.2
 
 - fae1e0a feat: impl From<&Vec<K>> for EasySet
